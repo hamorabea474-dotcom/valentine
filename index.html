@@ -25,7 +25,6 @@ h1 {
   position: relative;
 }
 
-/* دب ماسك قلب فوق السؤال */
 .teddy {
   font-size: 50px;
   position: absolute;
@@ -34,7 +33,6 @@ h1 {
   transform: translateX(-50%);
 }
 
-/* أزرار */
 button {
   padding: 12px 30px;
   border: none;
@@ -45,9 +43,7 @@ button {
   transition: transform 0.2s;
 }
 
-button:hover {
-  transform: scale(1.1);
-}
+button:hover { transform: scale(1.1); }
 
 .yes {
   top: 60%;
@@ -56,9 +52,7 @@ button:hover {
   color: white;
 }
 
-.yes::after {
-  content: " ❤️"; /* قلب أحمر جنب yes */
-}
+.yes::after { content: " ❤️"; }
 
 .no {
   top: 60%;
@@ -78,6 +72,19 @@ button:hover {
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 1s ease, transform 1s ease;
+}
+
+/* قلوب تتحرك */
+.heart {
+  position: absolute;
+  color: rgba(255,0,100,0.7);
+  font-size: 20px;
+  animation: float 5s linear forwards;
+}
+
+@keyframes float {
+  from { transform: translateY(100vh); opacity: 1; }
+  to { transform: translateY(-10vh); opacity: 0; }
 }
 </style>
 </head>
@@ -104,31 +111,29 @@ noBtn.addEventListener('click', () => {
   noBtn.style.top = Math.max(0, Math.min(window.innerHeight-noBtn.offsetHeight, noBtn.offsetTop + deltaY)) + 'px';
 });
 
-// زر Yes يظهر الجملة ويختفي الزرين + موسيقى
+// زر Yes يظهر الجملة، يختفي الزرين، الموسيقى والقلوب
 yesBtn.addEventListener('click', () => {
   // اخفاء الزرين
   yesBtn.style.display = 'none';
   noBtn.style.display = 'none';
-  
+
   // اظهار الجملة بإيفكت
   message.style.display = 'block';
   message.style.opacity = 0;
   message.style.transform = 'translate(-50%,-30%)';
-  setTimeout(() => {
-    message.style.opacity = 1;
-    message.style.transform = 'translate(-50%,0)';
-  }, 50);
+  setTimeout(()=>{ message.style.opacity=1; message.style.transform='translate(-50%,0)'; },50);
 
   playMusic();
+  startHearts();
 });
 
-// موسيقى خفيفة بدون ملفات
+// موسيقى بسيطة جديدة
 function playMusic(){
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const gainNode = audioCtx.createGain();
   gainNode.gain.value = 0.05;
 
-  const notes = [261.63,329.63,392.00,523.25];
+  const notes = [261.63, 293.66, 329.63]; // C4, D4, E4
   let startTime = audioCtx.currentTime;
 
   notes.forEach(freq=>{
@@ -138,9 +143,26 @@ function playMusic(){
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     osc.start(startTime);
-    osc.stop(startTime + 0.5);
-    startTime += 0.5;
+    osc.stop(startTime+0.4);
+    startTime += 0.4;
   });
+}
+
+// ظهور قلوب من تحت وتتزايد
+function createHeart(){
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  heart.innerHTML = '❤️';
+  heart.style.left = Math.random()*100 + 'vw';
+  heart.style.fontSize = Math.random()*25 + 15 + 'px';
+  heart.style.animationDuration = (Math.random()*2 + 3) + 's';
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+}
+
+let heartInterval;
+function startHearts(){
+  heartInterval = setInterval(createHeart, 200); // كل 0.2 ثانية قلب جديد
 }
 </script>
 
