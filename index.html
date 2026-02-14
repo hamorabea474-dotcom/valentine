@@ -4,11 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Valentine</title>
-
 <style>
 body {
   margin: 0;
-  overflow: hidden;
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom right, #e7cfc3, #f3e0c7);
   display: flex;
@@ -17,7 +15,6 @@ body {
   height: 100vh;
   flex-direction: column;
   text-align: center;
-  position: relative;
 }
 
 h1 {
@@ -32,26 +29,26 @@ button {
   border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
-  transition: 0.3s;
   position: absolute;
+  transition: transform 0.3s;
+}
+
+button:hover {
+  transform: scale(1.1);
 }
 
 .yes {
   background-color: #ff6b81;
   color: white;
-  left: calc(50% - 120px); /* موقع ثابت */
+  left: 40%;
   top: 50%;
 }
 
 .no {
   background-color: #ddd;
   color: #333;
-  left: calc(50% + 40px); /* بعيد عن yes */
+  left: 55%;
   top: 50%;
-}
-
-button:hover {
-  transform: scale(1.1);
 }
 
 .message {
@@ -61,34 +58,12 @@ button:hover {
   display: none;
   line-height: 1.5;
   position: absolute;
-  top: 70%;
+  top: 65%;
   left: 50%;
   transform: translateX(-50%);
 }
-
-/* floating hearts */
-.heart {
-  position: absolute;
-  color: rgba(255, 0, 100, 0.6);
-  font-size: 20px;
-  animation: float 6s linear infinite;
-}
-
-@keyframes float {
-  from { transform: translateY(100vh); opacity: 1; }
-  to { transform: translateY(-10vh); opacity: 0; }
-}
-
-/* fireworks canvas */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
 </style>
 </head>
-
 <body>
 
 <h1>Rana will you be my Valentine? 💖</h1>
@@ -101,20 +76,18 @@ canvas {
 بحبك يا لولو ♥️🫂
 </div>
 
-<canvas id="fireworks"></canvas>
-
 <script>
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
-const message = document.getElementById("loveMessage");
-const canvas = document.getElementById("fireworks");
-const ctx = canvas.getContext("2d");
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const message = document.getElementById('loveMessage');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// زر Yes يظهر الرسالة
+yesBtn.addEventListener('click', () => {
+  message.style.display = 'block';
+});
 
-// ====== زر No يتحرك لمسافة صغيرة ======
-noBtn.addEventListener("click", () => {
+// زر No يتحرك شوية عند الضغط
+noBtn.addEventListener('click', () => {
   const deltaX = (Math.random() - 0.5) * 100;
   const deltaY = (Math.random() - 0.5) * 50;
 
@@ -124,57 +97,10 @@ noBtn.addEventListener("click", () => {
   newLeft = Math.max(0, Math.min(window.innerWidth - noBtn.offsetWidth, newLeft));
   newTop = Math.max(0, Math.min(window.innerHeight - noBtn.offsetHeight, newTop));
 
-  noBtn.style.left = newLeft + "px";
-  noBtn.style.top = newTop + "px";
+  noBtn.style.left = newLeft + 'px';
+  noBtn.style.top = newTop + 'px';
 });
+</script>
 
-// ====== floating hearts ======
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.innerHTML = "❤️";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = Math.random() * 20 + 15 + "px";
-  heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-  document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 6000);
-}
-setInterval(createHeart, 300);
-
-// ====== fireworks ======
-let particles = [];
-let fireworksStarted = false;
-
-function startFireworks() {
-  if (fireworksStarted) return;
-  fireworksStarted = true;
-  for (let i = 0; i < 150; i++) {
-    particles.push({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      angle: Math.random() * 2 * Math.PI,
-      speed: Math.random() * 5 + 3,
-      radius: Math.random() * 3 + 2,
-      color: hsl(${Math.random()*360}, 100%, 60%)
-    });
-  }
-  animateFireworks();
-}
-
-function animateFireworks() {
-  ctx.fillStyle = "rgba(0,0,0,0.1)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.x += Math.cos(p.angle) * p.speed;
-    p.y += Math.sin(p.angle) * p.speed;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.fillStyle = p.color;
-    ctx.fill();
-  });
-  requestAnimationFrame(animateFireworks);
-}
-
-// ====== موسيقى خفيفة عند الضغط على Yes ======
-function playMusic() {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+</body>
+</html>
