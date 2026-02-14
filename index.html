@@ -3,63 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valentine Music Only</title>
+<title>My Valentine</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:linear-gradient(to bottom right,#e7cfc3,#f3e0c7); display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; text-align:center; overflow:hidden;}
-h1 { font-size:26px; margin-bottom:60px; color:#333;}
-button { padding:12px 30px; border:none; border-radius:12px; font-size:16px; cursor:pointer; position:absolute;}
-.yes { top:60%; left:40%; background:#ff6b81;color:#fff;}
-.no { top:60%; left:55%; background:#ddd;color:#333;}
-button:hover {transform:scale(1.1);}
-.message { font-size:32px;color:#e63946; display:none; line-height:1.5; position:absolute; top:50%; left:50%; transform:translateX(-50%); opacity:0; transition:opacity 1s ease, transform 1s ease;}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom right, #e7cfc3, #f3e0c7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  text-align: center;
+  overflow: hidden;
+}
+
+h1 {
+  font-size: 26px;
+  margin-bottom: 60px;
+  color: #333;
+  position: relative;
+}
+
+/* دب ماسك قلب فوق السؤال */
+.teddy {
+  font-size: 50px;
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* أزرار */
+button {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+.yes {
+  top: 60%;
+  left: 40%;
+  background-color: #ff6b81;
+  color: white;
+}
+
+.yes::after {
+  content: " ❤️"; /* قلب أحمر جنب yes */
+}
+
+.no {
+  top: 60%;
+  left: 55%;
+  background-color: #ddd;
+  color: #333;
+}
+
+.message {
+  font-size: 32px;
+  color: #e63946;
+  display: none;
+  line-height: 1.5;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 1s ease, transform 1s ease;
+}
 </style>
 </head>
 <body>
-<h1>Rana will you be my Valentine? 💖</h1>
+
+<div class="teddy">🧸💖</div>
+<h1>Rana will you be my Valentine?</h1>
+
 <button class="yes" id="yesBtn">Yes</button>
 <button class="no" id="noBtn">No</button>
-<div class="message" id="loveMessage">🫂 yeah, you are my valentine 💖<br>بحبك يا لولو ♥️🫂</div>
+
+<div class="message" id="loveMessage">بحبك يا لولو ♥️🫂</div>
 
 <script>
 const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
 const message = document.getElementById('loveMessage');
 
-// No يتحرك
-noBtn.addEventListener('click', ()=>{
-  const deltaX=(Math.random()-0.5)*300;
-  const deltaY=(Math.random()-0.5)*150;
-  noBtn.style.left=Math.max(0, Math.min(window.innerWidth-noBtn.offsetWidth,noBtn.offsetLeft+deltaX))+'px';
-  noBtn.style.top=Math.max(0, Math.min(window.innerHeight-noBtn.offsetHeight,noBtn.offsetTop+deltaY))+'px';
+// زر No يتحرك بعيد وأسرع
+noBtn.addEventListener('click', () => {
+  const deltaX = (Math.random()-0.5)*300;
+  const deltaY = (Math.random()-0.5)*150;
+  noBtn.style.left = Math.max(0, Math.min(window.innerWidth-noBtn.offsetWidth, noBtn.offsetLeft + deltaX)) + 'px';
+  noBtn.style.top = Math.max(0, Math.min(window.innerHeight-noBtn.offsetHeight, noBtn.offsetTop + deltaY)) + 'px';
 });
 
-// Yes يظهر الجملة + موسيقى فقط
-yesBtn.addEventListener('click', ()=>{
-  message.style.display='block';
-  message.style.opacity=0;
-  message.style.transform='translate(-50%,-30%)';
-  setTimeout(()=>{ message.style.opacity=1; message.style.transform='translate(-50%,0)'; },50);
+// زر Yes يظهر الجملة ويختفي الزرين + موسيقى
+yesBtn.addEventListener('click', () => {
+  // اخفاء الزرين
+  yesBtn.style.display = 'none';
+  noBtn.style.display = 'none';
+  
+  // اظهار الجملة بإيفكت
+  message.style.display = 'block';
+  message.style.opacity = 0;
+  message.style.transform = 'translate(-50%,-30%)';
+  setTimeout(() => {
+    message.style.opacity = 1;
+    message.style.transform = 'translate(-50%,0)';
+  }, 50);
+
   playMusic();
 });
 
-// موسيقى بدون ألعاب نارية
+// موسيقى خفيفة بدون ملفات
 function playMusic(){
-  const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  const gainNode=audioCtx.createGain();
-  gainNode.gain.value=0.05;
-  const notes=[261.63,329.63,392.00,523.25];
-  let startTime=audioCtx.currentTime;
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0.05;
+
+  const notes = [261.63,329.63,392.00,523.25];
+  let startTime = audioCtx.currentTime;
+
   notes.forEach(freq=>{
-    const osc=audioCtx.createOscillator();
-    osc.type='sine';
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(freq,startTime);
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     osc.start(startTime);
-    osc.stop(startTime+0.5);
-    startTime+=0.5;
+    osc.stop(startTime + 0.5);
+    startTime += 0.5;
   });
 }
 </script>
+
 </body>
 </html>
