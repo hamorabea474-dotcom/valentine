@@ -40,7 +40,7 @@ button {
   font-size: 16px;
   cursor: pointer;
   position: absolute;
-  transition: transform 0.2s, left 0.3s, top 0.3s; /* حركة سلسة للزر */
+  transition: transform 0.2s;
 }
 
 button:hover { transform: scale(1.1); }
@@ -79,7 +79,7 @@ button:hover { transform: scale(1.1); }
   position: absolute;
   color: rgba(255,0,100,0.7);
   font-size: 20px;
-  animation: float linear forwards;
+  animation: float 5s linear forwards;
 }
 
 @keyframes float {
@@ -103,26 +103,7 @@ const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
 const message = document.getElementById('loveMessage');
 
-let heartInterval; // لتوليد القلوب
-let heartsRate = 400; // سرعة توليد القلوب قبل الضغط
-
-// وظيفة توليد قلب واحد
-function createHeart() {
-  const heart = document.createElement('div');
-  heart.classList.add('heart');
-  heart.innerHTML = '❤️';
-  heart.style.left = Math.random()*100 + 'vw';
-  heart.style.fontSize = Math.random()*25 + 15 + 'px';
-  const duration = Math.random()*2 + 3; // 3-5 ثواني
-  heart.style.animationDuration = duration + 's';
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(), duration*1000);
-}
-
-// توليد قلوب بشكل مستمر
-heartInterval = setInterval(createHeart, heartsRate);
-
-// زر No يتحرك سلس وسكوشي
+// زر No يتحرك بعيد وأسرع
 noBtn.addEventListener('click', () => {
   const deltaX = (Math.random()-0.5)*300;
   const deltaY = (Math.random()-0.5)*150;
@@ -130,7 +111,7 @@ noBtn.addEventListener('click', () => {
   noBtn.style.top = Math.max(0, Math.min(window.innerHeight-noBtn.offsetHeight, noBtn.offsetTop + deltaY)) + 'px';
 });
 
-// زر Yes
+// زر Yes يظهر الجملة، يختفي الزرين، الموسيقى والقلوب
 yesBtn.addEventListener('click', () => {
   // اخفاء الزرين
   yesBtn.style.display = 'none';
@@ -142,12 +123,8 @@ yesBtn.addEventListener('click', () => {
   message.style.transform = 'translate(-50%,-30%)';
   setTimeout(()=>{ message.style.opacity=1; message.style.transform='translate(-50%,0)'; },50);
 
-  // الموسيقى
   playMusic();
-
-  // بعد الضغط على Yes، القلوب تكتر بشكل أسرع
-  clearInterval(heartInterval);
-  heartInterval = setInterval(createHeart, 100); // كل 0.1 ثانية قلب جديد
+  startHearts();
 });
 
 // موسيقى بسيطة جديدة
@@ -155,13 +132,39 @@ function playMusic(){
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const gainNode = audioCtx.createGain();
   gainNode.gain.value = 0.05;
-  const notes = [261.63, 293.66, 329.63];
+
+  const notes = [261.63, 293.66, 329.63]; // C4, D4, E4
   let startTime = audioCtx.currentTime;
+
   notes.forEach(freq=>{
     const osc = audioCtx.createOscillator();
-    osc.type='sine';
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(freq,startTime);
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
     osc.start(startTime);
     osc.stop(startTime+0.4);
+    startTime += 0.4;
+  });
+}
+
+// ظهور قلوب من تحت وتتزايد
+function createHeart(){
+  const heart = document.createElement('div');
+  heart.classList.add('heart');
+  heart.innerHTML = '❤️';
+  heart.style.left = Math.random()*100 + 'vw';
+  heart.style.fontSize = Math.random()*25 + 15 + 'px';
+  heart.style.animationDuration = (Math.random()*2 + 3) + 's';
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+}
+
+let heartInterval;
+function startHearts(){
+  heartInterval = setInterval(createHeart, 200); // كل 0.2 ثانية قلب جديد
+}
+</script>
+
+</body>
+</html>
