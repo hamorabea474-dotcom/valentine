@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Valentine</title>
+<title>Valentine Fireworks Only</title>
 <style>
 body {
   margin: 0;
@@ -31,30 +31,15 @@ button {
   font-size: 16px;
   cursor: pointer;
   position: absolute;
-  transition: transform 0.2s;
 }
 
-button:hover {
-  transform: scale(1.1);
-}
+.yes { top: 60%; left: 40%; background: #ff6b81; color: #fff; }
+.no { top: 60%; left: 55%; background: #ddd; color: #333; }
 
-.yes {
-  background-color: #ff6b81;
-  color: white;
-  top: 60%;
-  left: 40%;
-}
-
-.no {
-  background-color: #ddd;
-  color: #333;
-  top: 60%;
-  left: 55%;
-}
+button:hover { transform: scale(1.1); }
 
 .message {
-  margin-top: 25px;
-  font-size: 32px; /* خط أكبر */
+  font-size: 32px;
   color: #e63946;
   display: none;
   line-height: 1.5;
@@ -66,27 +51,15 @@ button:hover {
   transition: opacity 1s ease, transform 1s ease;
 }
 
-/* canvas للألعاب النارية */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
+canvas { position: fixed; top: 0; left: 0; pointer-events: none; }
 </style>
 </head>
 <body>
 
 <h1>Rana will you be my Valentine? 💖</h1>
-
 <button class="yes" id="yesBtn">Yes</button>
 <button class="no" id="noBtn">No</button>
-
-<div class="message" id="loveMessage">
-🫂 yeah, you are my valentine 💖<br>
-بحبك يا لولو ♥️🫂
-</div>
-
+<div class="message" id="loveMessage">🫂 yeah, you are my valentine 💖<br>بحبك يا لولو ♥️🫂</div>
 <canvas id="fireworks"></canvas>
 
 <script>
@@ -99,77 +72,56 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// ===== زر No يتحرك بسرعة أكبر ومسافة أبعد =====
+// زر No يتحرك بعيد وأسرع
 noBtn.addEventListener('click', () => {
-  const deltaX = (Math.random() - 0.5) * 300;
-  const deltaY = (Math.random() - 0.5) * 150;
-  let newLeft = noBtn.offsetLeft + deltaX;
-  let newTop = noBtn.offsetTop + deltaY;
-  newLeft = Math.max(0, Math.min(window.innerWidth - noBtn.offsetWidth, newLeft));
-  newTop = Math.max(0, Math.min(window.innerHeight - noBtn.offsetHeight, newTop));
-  noBtn.style.left = newLeft + 'px';
-  noBtn.style.top = newTop + 'px';
+  const deltaX = (Math.random()-0.5)*300;
+  const deltaY = (Math.random()-0.5)*150;
+  noBtn.style.left = Math.max(0, Math.min(window.innerWidth-noBtn.offsetWidth, noBtn.offsetLeft + deltaX)) + 'px';
+  noBtn.style.top = Math.max(0, Math.min(window.innerHeight-noBtn.offsetHeight, noBtn.offsetTop + deltaY)) + 'px';
 });
 
-// ===== زر Yes يظهر الرسالة بإيفكت ويبدأ الموسيقى والألعاب النارية =====
+// زر Yes
 yesBtn.addEventListener('click', () => {
   message.style.display = 'block';
-  // إيفكت fade in + حركة بسيطة
   message.style.opacity = 0;
-  message.style.transform = 'translate(-50%, -30%)';
-  setTimeout(() => {
-    message.style.opacity = 1;
-    message.style.transform = 'translate(-50%, 0)';
-  }, 50);
-
+  message.style.transform = 'translate(-50%,-30%)';
+  setTimeout(()=>{ message.style.opacity=1; message.style.transform='translate(-50%,0)'; },50);
   startFireworks();
-  playMusic();
 });
 
-// ===== ألعاب نارية بسيطة =====
+// ألعاب نارية بدون صوت
 let particles = [];
 let fireworksStarted = false;
 
 function startFireworks() {
-  if (fireworksStarted) return;
+  if(fireworksStarted) return;
   fireworksStarted = true;
-  for (let i = 0; i < 200; i++) {
+  for(let i=0;i<200;i++){
     particles.push({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      angle: Math.random() * 2 * Math.PI,
-      speed: Math.random() * 6 + 2,
-      radius: Math.random() * 3 + 2,
-      color: hsl(${Math.random()*360}, 100%, 60%)
+      x: canvas.width/2,
+      y: canvas.height/2,
+      angle: Math.random()*2*Math.PI,
+      speed: Math.random()*6+2,
+      radius: Math.random()*3+2,
+      color: hsl(${Math.random()*360},100%,60%)
     });
   }
   animateFireworks();
 }
 
-function animateFireworks() {
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+function animateFireworks(){
+  ctx.fillStyle='rgba(0,0,0,0.1)';
   ctx.fillRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    p.x += Math.cos(p.angle) * p.speed;
-    p.y += Math.sin(p.angle) * p.speed;
+  particles.forEach(p=>{
+    p.x+=Math.cos(p.angle)*p.speed;
+    p.y+=Math.sin(p.angle)*p.speed;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-    ctx.fillStyle = p.color;
+    ctx.fillStyle=p.color;
     ctx.fill();
   });
   requestAnimationFrame(animateFireworks);
 }
-
-// ===== موسيقى خفيفة بدون ملفات =====
-function playMusic() {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const gainNode = audioCtx.createGain();
-  gainNode.gain.value = 0.05;
-
-  const notes = [261.63, 329.63, 392.00, 523.25];
-  let startTime = audioCtx.currentTime;
-
-  notes.forEach(freq => {
-    const osc = audioCtx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.
+</script>
+</body>
+</html>
