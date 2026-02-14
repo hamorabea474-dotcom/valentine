@@ -26,12 +26,6 @@ h1 {
   color: #333;
 }
 
-.buttons {
-  display: flex;
-  gap: 200px; /* خليهم بعيد عن بعض */
-  position: relative;
-}
-
 button {
   padding: 12px 30px;
   border: none;
@@ -39,18 +33,21 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
-  position: relative;
+  position: absolute;
 }
 
 .yes {
   background-color: #ff6b81;
   color: white;
+  left: calc(50% - 120px); /* موقع ثابت */
+  top: 50%;
 }
 
 .no {
   background-color: #ddd;
   color: #333;
-  position: relative;
+  left: calc(50% + 40px); /* بعيد عن yes */
+  top: 50%;
 }
 
 button:hover {
@@ -63,6 +60,10 @@ button:hover {
   color: #e63946;
   display: none;
   line-height: 1.5;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* floating hearts */
@@ -92,10 +93,8 @@ canvas {
 
 <h1>Rana will you be my Valentine? 💖</h1>
 
-<div class="buttons">
-  <button class="yes" id="yesBtn">Yes</button>
-  <button class="no" id="noBtn">No</button>
-</div>
+<button class="yes" id="yesBtn">Yes</button>
+<button class="no" id="noBtn">No</button>
 
 <div class="message" id="loveMessage">
 🫂 yeah, you are my valentine 💖<br>
@@ -114,28 +113,19 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// ====== زر No يتحرك بمسافة صغيرة ======
-noBtn.addEventListener("click", function() {
+// ====== زر No يتحرك لمسافة صغيرة ======
+noBtn.addEventListener("click", () => {
   const deltaX = (Math.random() - 0.5) * 100;
   const deltaY = (Math.random() - 0.5) * 50;
-  const currentLeft = noBtn.offsetLeft;
-  const currentTop = noBtn.offsetTop;
-  let newLeft = currentLeft + deltaX;
-  let newTop = currentTop + deltaY;
+
+  let newLeft = noBtn.offsetLeft + deltaX;
+  let newTop = noBtn.offsetTop + deltaY;
 
   newLeft = Math.max(0, Math.min(window.innerWidth - noBtn.offsetWidth, newLeft));
   newTop = Math.max(0, Math.min(window.innerHeight - noBtn.offsetHeight, newTop));
 
-  noBtn.style.position = "absolute";
   noBtn.style.left = newLeft + "px";
   noBtn.style.top = newTop + "px";
-});
-
-// ====== زر Yes ======
-yesBtn.addEventListener("click", function() {
-  message.style.display = "block";
-  startFireworks();
-  playMusic();
 });
 
 // ====== floating hearts ======
@@ -181,3 +171,10 @@ function animateFireworks() {
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
     ctx.fillStyle = p.color;
     ctx.fill();
+  });
+  requestAnimationFrame(animateFireworks);
+}
+
+// ====== موسيقى خفيفة عند الضغط على Yes ======
+function playMusic() {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
